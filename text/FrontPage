@@ -1,0 +1,17 @@
+'''Welcome to the LinuxCare OzLabs PikiPiki.'''  This is a collaborative hypertext environment, with an emphasis on easy access to and modification of information.
+
+You can edit any page by pressing the link at the bottom of the page.  Capitalized words joined together form WikiWords, which hyperlink to another page.  The highlighted title searches for all pages that link to the current page.  Pages which do not yet exist are linked with a question mark: just follow the link and you can add a definition.
+
+Please make sure your browser is set to reload modified pages.
+
+If you have any questions, please see MartinPool.
+
+----
+
+Interesting starting points:
+
+  * RecentChanges: see where people are currently working
+  * PopularisingPikiPiki
+  * PikiSandBox: feel free to change this page and experiment with editing
+  * PikiConventions: ways of arranging text in Piki: add your own suggestions!
+  * FindPage: search or browse the database in various ways
