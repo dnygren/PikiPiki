@@ -1,41 +1,90 @@
-Names of pages have to LookLikeThis.
-It's called a WikiName.
-If you write a word that LookLikeThis, it will be automatically turned into a link.
-
-Be aware that PikiPiki does not lock pages during editing, so if you pause for a long time on the edit screen you may overwrite somebody else's changes.
-
-Leave blank lines between paragraphs.
-
-You can also write ''italics'' and '''bold'''.
-To write italics, enclose the text in double single quotes.
-To write bold, enclose the text in triple single quotes.
-If you can't figure out what I mean, click EditText to look at the source for this page.
-
-If you indent text
-
-  like this, then it is indented in the output
-
-    you can have multiple levels of indent
-
-And if you put asterisks at the start of the line
-
-  * you get a 
-  * bulleted
-  * list
-    * which can also be indented
-      * to several levels
-
-To insert program source without reformatting in a monospace font, use three curly braces:
-
-{{{
-  public static void main(String[] args) {
-    out.println("Hello");
-  }
-}}}
-
-Just like that.
-
-Now click EditText in the footer to see the markup for this page, and try it yourself in PikiSandBox.
-
-----
-Contributors and PikiGurus: JohnFarrell, MartinPool
+{{http://www.wikicreole.org/attach/CheatSheet/creole_cheat_sheet.png|Cheat Sheet}}
+
+Names of pages have to look [[like this]].
+They are called called Wiki Words.
+If you write a word that looks [[like this]], it will be automatically turned into an internal link.
+
+Piki Piki also supports the deprecated CamelCase method of creating WikiWords.
+
+You can link to external sites by simply writing the URL: http://localhost/~dnygren or by
+[[http://127.0.0.1/~dnygren|Making a URL linkname]]
+
+You can also link to internal or external images via a URL:\\
+Unix:\\
+{{http://127.0.0.1/~dnygren/index/Template/Images/A141_A196_A211.png |Starcat PSU Bar Chart}}\\
+Windows:\\
+{{http://127.0.0.1/CGI-BIN/Images/A141_A196_A211.png |Starcat PSU Bar Chart}}
+
+or by direct reference:\\
+Unix:\\
+{{/~dnygren/index/Template/CGI-BIN/Images/A196_droop.png|A196/A141 PSU Voltage Droop}}\\
+Windows:\\
+{{/CGI-BIN/Images/A196_droop.png|A196/A141 PSU Voltage Droop}}
+
+
+
+Be aware that PikiPiki **does not lock pages during editing**, so if you pause for a long time on the edit screen you may overwrite somebody else's changes.
+
+Leave blank lines between paragraphs.
+
+To write in //italics//, enclose the text in double slashes.
+To write **bold**, enclose the text in double asterisks.
+You can also write **//bolditalic//** or the same as //**italicbold**//.
+
+Piki Piki also supports the deprecated double single quotes method of creating ''italics'' and triple single quotes method of creating '''bold''' text.
+
+If you can't figure out how to do this, click EditText in the footer to look at the source for this page.
+
+You can also force a\\linebreak.
+----
+
+Learn about HorizontalRules like those that surround this sentence.
+
+----
+
+==You can make really big headings
+
+=== Or smaller headings
+
+==== Or even smaller headings ====
+
+==== Headings can have asymmetrical equals signs
+
+==== Or balanced symmetrical equals signs ====
+
+----
+
+Piki Piki supports simple tables:
+
+|= Table Header title  |= Another header title |= Yet another table header |
+| Table Row                   | table data |
+| //Table Row 2//                 | **table data** |      tabledata |
+
+----
+
+If you indent text
+
+  like this, then it is indented in the output
+
+    you can have multiple levels of indent
+
+And if you put asterisks at the start of the line
+
+  * you get a 
+  * bulleted
+  * list
+  ** which can also be indented
+  *** to several levels
+
+
+To insert program source without reformatting in pre-formatted "verbatim" mode with a monospace font, use three curly braces:
+
+{{{
+  public static void main(String[] args) {
+    out.println("Hello");
+  }
+}}}
+
+Just like that.
+
+Now click **Edit Text** in the footer to see the markup for this page, and try it yourself in PikiSandBox.

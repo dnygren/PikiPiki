@@ -1,2 +1,2 @@
 # PikiPiki
-PikiPiki is MartinPool's reimplementation of WikiWikiWeb in PythonLanguage, released under the GnuGeneralPublicLicense. 
+PikiPiki is Martin Pool's reimplementation of WikiWikiWeb in Python, released under the GNU General Public License. 

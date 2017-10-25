@@ -1,0 +1,14 @@
+This is the README file for the PikiPiki WikiWiki
+
+The version number can be found in piki.cgi.
+
+This package provides a Personal Python WikiWiki that is suitable for
+maintaining Wiki pages for an internal project or workgroup. 
+
+The INSTALL file just asks you to read the comments in the piki.cgi script for
+installation instructions.
+
+Wiki entries are kept in the ./text subdirectory. Images specific to PikiPiki
+are kept in ./Images.
+
+Copying conditions are in a file called COPYING.

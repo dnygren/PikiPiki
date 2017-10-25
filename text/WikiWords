@@ -1,0 +1,15 @@
+Names of wiki pages to look [[like this]]. They are called called [[wiki words]]. A Wiki Wiki uses [[wiki words]] to automatically designate or establish links. If you edit this page and write **words** (a set of alpha-numeric characters, including the underscore character, separated by optional spaces), enclosed with two open and two closed square brackets, it will be automatically turned into an internal link. Shaded [[wiki words]] such as [[ no such page ]] means a link has been designated, but not yet filled in with information.
+
+----
+
+PikiPiki also supports the deprecated Camel Case method of creating WikiWords. WikiWords in PikiPiki used to be just Camel Case, but the [[http://www.wikicreole.org/|Wiki Creole]] standard indicates wiki words should standardized to be two open square brackets [[  containing a words, spaces, or apostrophes, followed by two closed square brackets ]], so as to facilitate data exchange between PikiPiki and other Wiki Wiki engines. It is recommended you use the enclosed double square bracket form of creating Wiki Words.
+
+A Camel Case word is composed of at least two words joined together that start with an upper case character are called WikiWords. This method of running together two capitalized words is also called Camel Case.
+
+Here are some examples of Camel Case WikiWords: DanNygren, PikiSandBox, PikiPiki.
+
+Here are some examples of how not to make Camel Case words: DAnNygren, Piki4Ever, iLikePiki, BrokenDIMM, PartA, Number1.
+
+{{{
+Note that neither [[wiki words]] nor WikiWords become internal links in VerbatimMode.
+}}}

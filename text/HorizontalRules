@@ -1,7 +1,26 @@
-You can rule a line across the page by typing four or more dashes.  In PikiPiki the number of dashes in a horizontal rule markup determine how thick it is: use them in moderation.  (A suggestion from JohnFarrell.)
-
----
-----
------
-------
+You can rule a line across the page by typing four or more dashes.  In PikiPiki the number of dashes in a horizontal rule markup determine how thick it is: use them in moderation.  (A suggestion from John Farrell.)
+
+no rule
+
+---
+
+thin rule
+----
+rule
+-----
+thick rule
+------
+really thick rule
 -------
+
+{{{
+
+This does not apply in pre-formatted "verbatim" mode:
+
+---
+----
+-----
+------
+-------
+
+}}}

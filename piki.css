@@ -1,3 +1,11 @@
 BODY { background-color: #FFFFFF; color: #000000 }
 A { color: #1f6b9e }
 A.nonexistent { background-color: #CCCCCC }
+table
+{
+border-collapse:collapse;
+}
+table,th,td
+{
+border:1px solid black;
+}

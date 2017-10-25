@@ -3,22 +3,23 @@ You can use this page to search all entries in PikiPiki.  Searches are not case 
 Here are some good starting points for browsing:
 
  * FrontPage -- top of this system
- * RecentChanges recorded automatically
- * TipsForBeginners
+ * RecentChanges -- recorded automatically
+ * PikiConventions -- ways of arranging text in Piki: add your own suggestions!
+ * PikiSandBox --feel free to change this page and experiment with editing 
  * TitleIndex -- all pages in the database
  * WordIndex -- all words in all titles
 
 Here's a title search.  Try something like ''manager'':
 
- [[TitleSearch]]
+ ((TitleSearch))
 
 Here's a full-text search.
 
- [[FullSearch]]
+ ((FullSearch))
 
 You can also use regular expressions, such as
 
 {{{    seriali[sz]e}}}
 
 Or go direct to a page, or create a new page by entering its name here:
-  [[GoTo]]
+  ((GoTo))

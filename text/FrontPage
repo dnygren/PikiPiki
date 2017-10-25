@@ -1,17 +1,135 @@
-'''Welcome to the LinuxCare OzLabs PikiPiki.'''  This is a collaborative hypertext environment, with an emphasis on easy access to and modification of information.
+'''Welcome to the ''Your Project Name'' PikiPiki.'''  This is a collaborative hypertext environment, with an emphasis on easy access to and modification of information.
 
-You can edit any page by pressing the link at the bottom of the page.  Capitalized words joined together form WikiWords, which hyperlink to another page.  The highlighted title searches for all pages that link to the current page.  Pages which do not yet exist are linked with a question mark: just follow the link and you can add a definition.
+You can edit any page by pressing the clicking **Edit Text** at the bottom of this page. The EditingTips link at the bottom of each page you are editing will tell you how to create WikiWords, which hyperlink to another page.
 
-Please make sure your browser is set to reload modified pages.
-
-If you have any questions, please see MartinPool.
+If you have any questions, please contact DanNygren.
 
 ----
 
 Interesting starting points:
 
-  * RecentChanges: see where people are currently working
-  * PopularisingPikiPiki
-  * PikiSandBox: feel free to change this page and experiment with editing
-  * PikiConventions: ways of arranging text in Piki: add your own suggestions!
   * FindPage: search or browse the database in various ways
+  * PikiConventions: ways of arranging text in Piki: add your own suggestions!
+  * PikiSandBox: feel free to change this page and experiment with editing
+  * RecentChanges: see where people are currently working
+
+----
+
+** Here's an example of how you might set up a Wiki Wiki for your project: **
+
+=== Heading Under _ Score, Period ., Dash -, Apostrophe ', Exclaim!, Question?, Slash /
+
+  * [[Do Something's-Page ]]
+  ** [[Do Something.Related One]]
+  ** [[Do Something_Related Two]]
+  *** [[Do Something.Related Two A]]
+  *** [[Do Something Related Two B]]
+  * [[Get Help]]
+
+  # [[Do Something]]
+  # [[Do Something Two]]
+  # [[Do Something Three]]
+  # [[Do Something Four]]
+  # [[Do Something Five]]
+  # [[Do Something Six]]
+
+  # [[Do Something]]
+  ## [[ Do Something Related One ]]
+  ## [[ Do Something Related Two]]
+  ### [[Do Something Related Two A ]]
+  ### [[Do Something Related Two B ]]
+  # [[Get Help]]
+
+  * [[Do Something]]
+  ** [[ Do Something Related One ]]
+  ** [[ Do Something Related Two]]
+  *** [[Do Something Related Two A ]]
+  *** [[Do Something Related Two B ]]
+  * [[Get Help]]
+
+
+----
+
+=== General
+
+  * Interesting Stuff
+  * More Interesting Stuff
+  ** Related Stuff
+  ** More related stuff
+  ** How to do **bold** inside a bullet list
+
+* Another
+** **Bold** Bullet
+*** **** List ****
+**** ***Complete**********
+
+** Bold **
+*** Two sets of three asterisks ***
+ *** Three Asterisks
+
+# Octothorpe #
+## Double Hash ##
+### Triple Hash Mark ####
+################## Hash Marks
+Just a bunch of hash marks # ## ### #### ##### ################
+
+----
+
+=== Errors / Troubleshooting
+
+  * [[Error Message 1 ]]
+  * [[ Error Message 2]]
+
+----
+
+Simple tables can be formatted like this:
+
+|= Table header title               |= Another header title     |
+| Table data | More table data  |
+| Feature A | Supported in ECO 1 |
+| Feature B | See Bug 12345 |
+| //italic text is supported//             | ** bold text is also supported **     |
+
+----
+
+You can also format by forcing linebreaks:
+
+My contact information:\\
+Bldg: ABC \\
+Room: 123\\
+Phone: xyz\\
+Mobile: abc\\
+
+----
+
+URLs can be directly written:
+
+http://www.bing.com
+
+or written referencing a title:
+
+[[http://www.google.com|Google]]
+
+[[http://www.slashdot.org|slashdot.org]]
+
+[[http://www.yahoo.com|Yahoo_shows_under_scores_are_allowed]]
+
+----
+
+
+You can include images via a URL if you don't have access to the filesystem:\\
+Unix:\\
+{{http://127.0.0.1/~dnygren/index/Template/Images/A141_A196_A211.png |Starcat PSU Bar Chart}}\\
+Windows:\\
+{{http://127.0.0.1/CGI-BIN/Images/A141_A196_A211.png |Starcat PSU Bar Chart}}
+
+or if you do have access to the filesystem, by direct reference:\\
+Unix:\\
+{{/~dnygren/index/Template/CGI-BIN/Images/A196_droop.png|A196/A141 PSU Voltage Droop}}\\
+Windows:\\
+{{/CGI-BIN/Images/A196_droop.png|A196/A141 PSU Voltage Droop}}
+
+ * How does the PikiPiki handle the last line?
+ # If it is a ordered list ...
+|= Or               |= A    |
+| Table | with data ? |
