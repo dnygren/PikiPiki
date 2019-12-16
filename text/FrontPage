@@ -119,13 +119,13 @@ or written referencing a title:
 
 You can include images via a URL if you don't have access to the filesystem:\\
 Unix:\\
-{{http://127.0.0.1/~dnygren/index/Template/Images/A141_A196_A211.png |Starcat PSU Bar Chart}}\\
+{{http://127.0.0.1/~nygren/index/Template/Images/A141_A196_A211.png |Starcat PSU Bar Chart}}\\
 Windows:\\
 {{http://127.0.0.1/CGI-BIN/Images/A141_A196_A211.png |Starcat PSU Bar Chart}}
 
 or if you do have access to the filesystem, by direct reference:\\
 Unix:\\
-{{/~dnygren/index/Template/CGI-BIN/Images/A196_droop.png|A196/A141 PSU Voltage Droop}}\\
+{{/~nygren/index/Template/CGI-BIN/Images/A196_droop.png|A196/A141 PSU Voltage Droop}}\\
 Windows:\\
 {{/CGI-BIN/Images/A196_droop.png|A196/A141 PSU Voltage Droop}}
 

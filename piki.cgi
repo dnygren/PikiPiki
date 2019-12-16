@@ -1,13 +1,12 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 ################################################################################
 """piki.cgi: Quick-quick implementation of WikiWikiWeb in Python """
-__version__ = '$Revision: 1.105 $'[11:-2];
-# Release $Name:  $ (Only defined if checked out as a specific release)
+__version__ = '$Revision: 2.1 $'[11:-2];
 #
-# Modified by Daniel C. Nygren $Date: 2017/10/24 20:54:37 $
+# Modified by Daniel C. Nygren
 # 
 # Copyright (C) 1999, 2000 Martin Pool <mbp@humbug.org.au>
-# Copyright (C) 2017 Daniel C. Nygren <dan.nygren@alumni.clemson.edu>
+# Copyright (C) 2019 Daniel C. Nygren <dan.nygren@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -30,7 +29,7 @@ __version__ = '$Revision: 1.105 $'[11:-2];
 #
 # 1. Make sure you have a web server that will let you run CGIs.
 #
-# 2. Make sure Python 2.5.2 or greater is installed.
+# 2. Make sure Python 3.5.3 or greater is installed.
 #    Check by typing "python --version" in a command window.
 #  
 # 3. Configure the script:
@@ -38,9 +37,10 @@ __version__ = '$Revision: 1.105 $'[11:-2];
 #   a) On Unix or Apache on Windows systems, set the very first line to refer
 #   to the location of your Python program. For example:
 #
-#       i) for Unix #! /usr/local/bin/python
+#       i) for Unix #! /usr/local/bin/python3
+#          or       #! /usr/bin/env python3
 #
-#       ii) for Apache on Windows #! c:/python/python.exe
+#       ii) for Apache on Windows #! c:/python/python3.exe
 #
 #       iii) for IIS on Windows see below
 #        
@@ -53,16 +53,20 @@ __version__ = '$Revision: 1.105 $'[11:-2];
 #        Application Development Features -> CGI
 #
 #        Add web application for Python: In IIS Manager, right click Default Web
-#        Site -> Add Application, setting Alias e.g.: PythonApp, and make it pointing to
-#        some folder like C:\netpub\wwwroot\CGI-BIN, then click OK
+#        Site -> Add Application, setting Alias e.g.: PythonApp, and make it
+#        pointing to some folder like C:\netpub\wwwroot\CGI-BIN, then click OK
 #
-#        Double click the Default Web Site's Handler Mappings, right click to Add Script Map.
+#        Double click the Default Web Site's Handler Mappings, right click to
+#        Add Script Map.
 #
-#        In Request path, put "*.py" as the script files extension. In Executable, select
+#        In Request path, put "*.py" as the script files extension.
+#        In Executable, select
 #        For a Cygwin Installation:
-#        "C:\cygwin\bin\python2.7.exe %s %s" or "C:\cygwin64\bin\python2.7.exe %s %s"
-#        For a Python Windows Installation "C:\Python27\python.exe %s %s" 
-#        Give the script mapping an appropriate name, like "PythonHandler". Click OK. 
+#        "C:\cygwin\bin\python3.exe %s %s" or
+#        "C:\cygwin64\bin\python3.exe %s %s"
+#        For a Python Windows Installation "C:\Python3\python.exe %s %s" 
+#        Give the script mapping an appropriate name, like "PythonHandler".
+#        Click OK. 
 #
 #        Test locally on IIS with:
 #        http://localhost/CGI-BIN/piki.py
@@ -81,26 +85,63 @@ __version__ = '$Revision: 1.105 $'[11:-2];
 #      web server, and make logo_string point to it.
 #
 # 4. Set permissions
-
+#
 #   There is more than one way of setting permissions depending upon how your
-#   web server is configured. One method is to add a user with an apache
-#   public_html directory to the apache group and start apache with a umask of
+#   web server is configured. One method is to add a user (with a public_html
+#   directory) to the apache www-data group and start apache with a umask of
 #   002 so that files modified or created by apache can still be modified by
 #   the user. In that case, directories and executable files should be 
 #   chmod 770 (rwxrwx---), and other files 660 (rw-rw----).
-
+#
+# === Example ===
+# $ pwd
+# /etc/systemd/system/multi-user.target.wants
+# 
+# $ cat apache2.service
+# [Unit]
+# Description=The Apache HTTP Server
+# After=network.target remote-fs.target nss-lookup.target
+# 
+# [Service]
+# Type=forking
+# Environment=APACHE_STARTED_BY_SYSTEMD=true
+# ExecStart=/usr/sbin/apachectl start
+# ExecStop=/usr/sbin/apachectl stop
+# ExecReload=/usr/sbin/apachectl graceful
+# PrivateTmp=true
+# Restart=on-abort
+# UMask=0117
+# 
+# [Install]
+# WantedBy=multi-user.target
+# 
+# 
+# $ sudo systemctl daemon-reload
+# $ sudo systemctl restart apache2
+# 
+# $ pwd
+# /home/nygren/public_html/index/Template/CGI-BIN/text
+# 
+# $ ls -la
+# -rw-rw---- 1 www-data www-data   58 Dec 16 12:31 DanNygren
+# 
+# $ sudo usermod -a -G www-data nygren
+# (Logout and back in or temporarily enter group with)
+# $ newgrp www-data
 #
 #
-# CALLING SEQUENCE      piki.cgi needs to go to the CGI-BIN directory, or similar Windows directory 
+# CALLING SEQUENCE piki.cgi needs to go to the CGI-BIN directory,
+#                  or similar Windows directory 
 #
-# EXAMPLES              http://www.example.com/~dnygren/index/project/CGI-BIN/piki.cgi
-#                       http://dnygren-pc.example.com/CGI-BIN/piki.py
+# EXAMPLES      http://www.example.com/~dnygren/index/project/CGI-BIN/piki.cgi
+#               http://dnygren-pc.example.com/CGI-BIN/piki.py
 #
 # TARGET SYSTEM         Python
 #
-# DEVELOPMENT SYSTEM    Python 2.7.3, Solaris 10, Windows 7 Professional 
+# DEVELOPED ON      (Original) Python 2.7.3, Solaris 10, Windows 7 Professional 
+#                   Python 3.5.3
 #
-# CALLS                 (List of modules this routine calls)
+# CALLS             (List of modules this routine calls)
 #   ./piki.css 
 #   ./editlog.txt
 #   ./Images/pikipiki-logo.png
@@ -118,188 +159,30 @@ __version__ = '$Revision: 1.105 $'[11:-2];
 #
 # Python calls:
 
-import cgi, sys, string, os, re, errno, time, stat
+import cgi, sys, os, re, errno, time, stat
 from cgi import log
 from os import path, environ
 from socket import gethostbyaddr
 from time import localtime, strftime
-from cStringIO import StringIO
+from io import StringIO
 
 #
-# CALLED BY             Web server
+# CALLED BY         Web server
 #
-# INPUTS                User data
+# INPUTS            User data
 #
-# OUTPUTS               HTML web pages
+# OUTPUTS           HTML web pages
 #
-# RETURNS               (Type and meaning of return value, if any)
+# RETURNS           (Type and meaning of return value, if any)
 #
-# ERROR HANDLING        Redirect stderr to a file. 'a'ppend errors to the error file.
+# ERROR HANDLING    Redirect stderr to a file.
+#                   'a'ppend errors to the error file.
 #
-# WARNINGS              (1. Describe anything a maintainer should be aware of)
-#                       (2. Describe anything a maintainer should be aware of)
-#                       (N. Describe anything a maintainer should be aware of)
+# WARNINGS          (1. Describe anything a maintainer should be aware of)
+#                   (2. Describe anything a maintainer should be aware of)
+#                   (N. Describe anything a maintainer should be aware of)
 #
 ################################################################################
-################################################################################
-#               REVISIONS
-#
-# $Log: piki.cgi,v $
-# Revision 1.105  2017/10/24 20:54:37  dnygren
-# Cleanup for github release
-#
-# Revision 1.104  2013/12/04 18:10:28  dnygren
-# Changes to support Windows 7 IIS.
-# Updates to dynamically determine Unix installation directory.
-#
-# Revision 1.103  2013/09/13 21:12:00  dnygren
-# Cleaned up some bold vs. unnumbered list edge cases.
-#
-# Revision 1.102  2013/09/12 21:41:27  dnygren
-# Fixed bug where unordered lists sub items (i.e ** ) was interpreted as
-# a bold tag. Allow ! and ? in headings. Removed explicit _ from regexes
-# as \w already includes an underscore.
-#
-# Revision 1.101  2011/04/15 16:58:38  nygren
-# Added support for apostrophe, dash, underscore, period, and slash characters to
-# headings, URL linknames, image titles, and wiki words.
-#
-# Revision 1.100  2011/02/16 18:41:18  nygren
-# Improved handling of tables and lists at the end of a page.
-# Added apostrophes, dashes, underscores, and dots in wiki page and link names.
-#
-# Revision 1.99  2011/01/12 20:39:29  nygren
-# Added favicon.ico file,
-# Fixed bug where RecentChanges page needed ed_time in certain format.
-#
-# Revision 1.98  2011/01/05 17:59:55  nygren
-# Updated editlog.txt date and time format.
-#
-# Revision 1.97  2011/01/04 16:49:58  nygren
-# Fixed bug where invocation without a wiki page confused Windows.
-#
-# Revision 1.96  2010/12/30 22:23:26  nygren
-# Added un-numbered lists and Windows IIS support.
-#
-# Revision 1.95  2010/12/30 00:26:13  nygren
-# Removed indented lists.
-# Added ordered list Wiki Creole Syntax.
-#
-# Revision 1.94  2010/12/21 16:30:04  nygren
-# Went back to separate preformatted regular expression scan.
-#
-# Revision 1.93  2010/12/14 21:43:35  nygren
-# Removes FindPage "feature" where calling page is pre-populated in find fields.
-#
-# Revision 1.92  2010/11/15 17:32:13  nygren
-# Fixed bug where preformatted lines were being displayed incorrectly.
-#
-# Revision 1.91  2010/11/10 21:41:23  nygren
-# Fixed bug where a string of equals signs for a header without header
-# text caused the script to fail.
-#
-# Revision 1.90  2010/11/10 17:57:14  nygren
-# Fixed bug where wiki words with spaces and apostrophes wouldn't work.
-#
-# Revision 1.89  2010/11/05 22:17:44  nygren
-# Fixed bugs in index and find macros.
-#
-# Revision 1.88  2010/11/05 19:44:21  nygren
-# Fixed a bug where [[ wiki words with spaces ]] always showed up as
-# new / non-existent links.
-#
-# Revision 1.87  2010/11/05 19:15:59  nygren
-# Fixed bug where {{image.jpg|title}} wouldn't co-exist in-line inside
-# a preformatted section.
-#
-# Revision 1.86  2010/11/04 22:26:33  nygren
-# Removed scan_pre regular expression.
-#
-# Revision 1.85  2010/11/04 21:51:53  nygren
-# Support for preformatted text on same line.
-#
-# Revision 1.84  2010/11/04 17:51:03  nygren
-# Made wiki links with embedded spaces render properly.
-#
-# Revision 1.83  2010/11/03 22:41:19  nygren
-# Added support for simple tables.
-#
-# Revision 1.82  2010/10/15 22:37:43  nygren
-# Fixed bugs in the additions for Wiki Creole.
-#
-# Revision 1.81  2010/10/14 17:07:57  nygren
-# Fixed bug where non CamelCase wiki words ( wiki words using the [[syntax]] )
-# were not allowed to create new pages.
-#
-# Revision 1.80  2010/10/14 15:20:50  nygren
-# Added **Bold** //Italic// \\ Line break == Heading and == Heading ==
-# [[wikiword]] [[URL|linkname]] and {{image.jpg|title}} markup for
-# Wiki Creole compliance.
-#
-# Revision 1.77  2010/09/21 18:08:00  nygren
-# CamelCase text no longer becomes a WikiWord in pre-formatted verbatim mode.
-#
-# Revision 1.76  2010/09/17 17:11:45  nygren
-# Improved installation instructions.
-# Moved configurable portions towards the beginning of the script.
-#
-# Revision 1.75  2010/07/07 23:39:39  nygren
-# Fixed bug to better allow URL to be obtained from page title.
-#
-# Revision 1.74  2009/09/08 18:40:35  nygren
-# Improved e-mail regex to avoid falsely identifying Open Firmware paths as e-mail addresses.
-#
-# Revision 1.73  2007/02/09 22:09:24  nygren
-# Changed to allow URL to be obtained from page title.
-# Added comment header block and installation instructions.
-# Fixed front page tag at bottom of each page.
-#
-# revision 1.72
-# date: 2006/05/24 23:27:41;  author: nygren;  state: Exp;  lines: +4 -4
-# Made https links immune to preformatting.
-#
-# revision 1.71
-# date: 2006/03/15 16:38:36;  author: nygren;  state: Exp;  lines: +9 -5
-# Changed clicking PikiPiki logo behavior to take you to the front page
-# rather than showing you recent changes.
-#
-# revision 1.70
-# date: 2005/09/07 20:48:48;  author: nygren;  state: Exp;  lines: +4 -7
-# Removed unimplemented UploadForm browser from edit screen.
-#
-# revision 1.69
-# date: 2004/10/29 16:56:32;  author: nygren;  state: Exp;  lines: +4 -4
-# Changed edit window from 17 rows 80 columns to 40 rows 100 columns.
-#
-# revision 1.68
-# date: 2004/08/25 19:02:16;  author: nygren;  state: Exp;  lines: +2 -2
-# Changed alt HTML attribute to title attribute.
-#
-# revision 1.67
-# date: 2004/04/05 16:13:55;  author: nygren;  state: Exp;  lines: +4 -4
-# Added file URL option.
-#
-# revision 1.66
-# date: 2004/01/06 20:37:43;  author: nygren;  state: Exp;  lines: +2 -2
-# Added RCS revision to PikiPiki logo alt tag.
-#
-# revision 1.65
-# date: 2004/01/06 20:22:21;  author: nygren;  state: Exp;  lines: +4 -0
-# Added link to FrontPage at bottom of every page.
-#
-# revision 1.64
-# date: 2004/01/06 20:21:22;  author: nygren;  state: Exp;  lines: +16 -2
-# Fixed verbatim mode so dashes would stay dashes and not bars.
-#
-# revision 1.63
-# date: 2004/01/06 20:20:13;  author: nygren;  state: Exp;  lines: +5 -5
-# Changes for apache server.
-#
-# revision 1.62
-# date: 2004/01/06 20:18:18;  author: nygren;  state: Exp;
-# Starting at version 1.62 then adding local changes.
-################################################################################
-
 
 # Start Configurable parts -----------------------------------------
 
@@ -309,15 +192,15 @@ from cStringIO import StringIO
 ## Hardcode these values, or try to get locations depending upon the installation directory
 #data_dir = '/home/dnygren/public_html/index/Template/CGI-BIN/'
 data_dir = os.getcwd()
-#logo_string = '<img src="/~dnygren/index/Template/CGI-BIN/Images/pikipiki-logo.png" border=0 title="pikipiki $Revision: 1.105 $">'
-logo_string = '<img src="/~dnygren/' + string.replace(data_dir, '/home/dnygren/public_html/', '') + '/Images/pikipiki-logo.png" border=0 title="pikipiki $Revision: 1.105 $">'
+#logo_string = '<img src="/~dnygren/index/Template/CGI-BIN/Images/pikipiki-logo.png" border=0 title="pikipiki $Revision: 2.1 $">'
+logo_string = '<img src="/~nygren/' + str.replace(data_dir, '/home/nygren/public_html/', '') + '/Images/pikipiki-logo.png" border=0 title="pikipiki $Revision: 2.1 $">'
 # stylesheet link, or ''
 #css_url = '/~dnygren/index/Template/CGI-BIN/piki.css'    # stylesheet link, or ''
-css_url = '/~dnygren/' + string.replace(data_dir, '/home/dnygren/public_html/', '') + '/piki.css'
+css_url = '/~nygren/' + str.replace(data_dir, '/home/nygren/public_html/', '') + '/piki.css'
 
 ## Windows
 #data_dir = 'c:/inetpub/wwwroot/CGI-BIN/'
-#logo_string = '<img src="/CGI-BIN/Images/pikipiki-logo.png" border=0 title="pikipiki $Revision: 1.105 $">'
+#logo_string = '<img src="/CGI-BIN/Images/pikipiki-logo.png" border=0 title="pikipiki $Revision: 2.1 $">'
 #css_url = '/CGI-BIN/piki.css'    # stylesheet link, or ''
 
 
@@ -329,10 +212,10 @@ editlog_name = path.join(data_dir, 'editlog.txt')
 changed_time_fmt = ' . . . . [%I:%M %p]'
 date_fmt = '%a %d %b %Y'
 datetime_fmt = '%a %d %b %Y %I:%M %p'
-show_hosts = 0                                          # Show hostnames in RecentChanges page?
-nonexist_qm = 0                                         # Set this to 1 to show a '?' for nonexistent links.
-text_area_rows = 24                                     # Define editing area text rows
-text_area_cols = 132                                    # Define editing area text columns
+show_hosts = 0          # Show hostnames in RecentChanges page?
+nonexist_qm = 0         # Set this to 1 to show a '?' for nonexistent links.
+text_area_rows = 24     # Define editing area text rows
+text_area_cols = 132    # Define editing area text columns
 # End Configurable parts -------------------------------------------
 
 
@@ -356,7 +239,7 @@ def editlog_add(page_name, host):
     try: 
         # fcntl.flock(editlog.fileno(), fcntl.LOCK_EX)
         editlog.seek(0, 2)                  # to end
-        editlog.write(string.join((page_name, host, `time.time()`, `time.strftime(datetime_fmt)`), "\t") + "\n")
+        editlog.write('\t'.join((page_name, host, repr(time.time()), repr(time.strftime(datetime_fmt)))) + "\n")
     finally:
         # fcntl.flock(editlog.fileno(), fcntl.LOCK_UN)
         editlog.close()
@@ -379,24 +262,24 @@ def get_scriptname():
 
 
 def send_title(text, link=None, msg=None):
-    print "<head><title>%s</title>" % text
-    print '''<link rel="shortcut icon" href="favicon.ico" >'''
+    print("<head><title>%s</title>" % text)
+    print('''<link rel="shortcut icon" href="favicon.ico" >''')
     if css_url:
-        print '<link rel="stylesheet" type="text/css" href="%s">' % css_url
-    print "</head>"
-    print '<body><h1>'
+        print('<link rel="stylesheet" type="text/css" href="%s">' % css_url)
+    print("</head>")
+    print('<body><h1>')
     if logo_string:
-        print link_tag('FrontPage', logo_string)
+        print(link_tag('FrontPage', logo_string))
     if link:
         #print '<a href="%s">%s</a>' % (link, text)
         #Changed the above line to the below to make it easy to grab
         #the URL to a page from its title.
-        print link_tag(link, text)
+        print(link_tag(link, text))
     else:
-        print text
-    print '</h1>'
-    if msg: print msg
-    print '<hr>'
+        print(text)
+    print('</h1>')
+    if msg: print(msg)
+    print('<hr>')
 
 
 
@@ -430,12 +313,12 @@ def do_fullsearch(needle):
     hits.sort()
     hits.reverse()
 
-    print "<UL>"
+    print("<UL>")
     for (count, page_name) in hits:
-        print '<LI>' + Page(page_name).link_to()
-        print ' . . . . ' + `count`
-        print ['match', 'matches'][count <> 1]
-    print "</UL>"
+        print('<LI>' + Page(page_name).link_to())
+        print(' . . . . ' + repr(count))
+        print(['match', 'matches'][count != 1])
+    print("</UL>")
 
     print_search_stats(len(hits), len(all_pages))
 
@@ -448,19 +331,19 @@ def do_titlesearch(needle):
     
     needle_re = re.compile(needle, re.IGNORECASE)
     all_pages = page_list()
-    hits = filter(needle_re.search, all_pages)
+    hits = list(filter(needle_re.search, all_pages))
 
-    print "<UL>"
+    print("<UL>")
     for filename in hits:
-        print '<LI>' + Page(filename).link_to()
-    print "</UL>"
+        print('<LI>' + Page(filename).link_to())
+    print("</UL>")
 
     print_search_stats(len(hits), len(all_pages))
 
 
 def print_search_stats(hits, searched):
-    print "<p>%d hits " % hits
-    print " out of %d pages searched." % searched
+    print("<p>%d hits " % hits)
+    print(" out of %d pages searched." % searched)
 
 
 def do_edit(pagename):
@@ -479,9 +362,8 @@ def do_savepage(pagename):
 
 def make_index_key():
     s = '<p><center>'
-    links = map(lambda ch: '<a href="#%s">%s</a>' % (ch, ch),
-                string.lowercase)
-    s = s + string.join(links, ' | ')
+    links = ['<a href="#%s">%s</a>' % (ch, ch) for ch in str.lowercase]
+    s = s + str.join(links, ' | ')
     s = s + '</center><p>'
     return s
 
@@ -492,18 +374,18 @@ def page_list():
 
 def print_footer(name, editable=1, mod_string=None):
     base = get_scriptname()
-    print '<hr>'
+    print('<hr>')
     if editable:
-        print link_tag('?edit='+name, 'EditText')
-        print "of this page"
+        print(link_tag('?edit='+name, 'EditText'))
+        print("of this page")
         if mod_string:
-            print "(last modified %s)" % mod_string
-        print '<br>'
-    print link_tag('FindPage', 'FindPage')
-    print " by browsing, searching, or an index"
-    print '<br>'
-    print " Or return to the "
-    print link_tag('FrontPage')
+            print("(last modified %s)" % mod_string)
+        print('<br>')
+    print(link_tag('FindPage', 'FindPage'))
+    print(" by browsing, searching, or an index")
+    print('<br>')
+    print(" Or return to the ")
+    print(link_tag('FrontPage'))
 
 
 # Macros -----------------------------------------------------------
@@ -515,7 +397,7 @@ def _macro_FullSearch():
     return _macro_search("fullsearch")
 
 def _macro_search(type):
-    if form.has_key('value'):
+    if 'value' in form:
         default = form["value"].value
     else:
         default = ''
@@ -544,12 +426,12 @@ def _macro_WordIndex():
             except KeyError:
                 map[word] = [name]
 
-    all_words = map.keys()
+    all_words = list(map.keys())
     all_words.sort()
     last_letter = None
     for word in all_words:
-        letter = string.lower(word[0])
-        if letter <> last_letter:
+        letter = str.lower(word[0])
+        if letter != last_letter:
             s = s + '<a name="%s"><h3>%s</h3></a>' % (letter, letter)
             last_letter = letter
             
@@ -570,8 +452,8 @@ def _macro_TitleIndex():
     pages.sort()
     current_letter = None
     for name in pages:
-        letter = string.lower(name[0])
-        if letter <> current_letter:
+        letter = str.lower(name[0])
+        if letter != current_letter:
             s = s + '<a name="%s"><h3>%s</h3></a>' % (letter, letter)
             current_letter = letter
         else:
@@ -588,15 +470,15 @@ def _macro_RecentChanges():
     done_words = {}
     buf = StringIO()
     for line in lines:
-        page_name, addr, ed_time, readable_time = string.split(line, '\t')
+        page_name, addr, ed_time, readable_time = str.split(line, '\t')
         # year, month, day, DoW
         time_tuple = localtime(float(ed_time))
         day = tuple(time_tuple[0:3])
-        if day <> ratchet_day:
+        if day != ratchet_day:
             buf.write('<h3>%s</h3>' % strftime(date_fmt, time_tuple))
             ratchet_day = day
 
-        if done_words.has_key(page_name):
+        if page_name in done_words:
             continue
 
         done_words[page_name] = 1
@@ -632,7 +514,7 @@ class PageFormatter:
         self.oli_level = 0
         self.uli_level = 0
 
-    def _emph_repl(self, word):             # Original '''bold''' and ''italic'' markup
+    def _emph_repl(self, word): # Original '''bold''' and ''italic'' markup
         if len(word) == 3:
             self.is_b = not self.is_b
             return ['</b>', '<b>'][self.is_b]
@@ -640,7 +522,7 @@ class PageFormatter:
             self.is_em = not self.is_em
             return ['</em>', '<em>'][self.is_em]
 
-    def _emf_repl(self, word):              # **Bold** added for Wiki Creole compliance
+    def _emf_repl(self, word):  # **Bold** added for Wiki Creole compliance
         asterisks = re.search("\*+",word)
         length = len(asterisks.group(0))
         if length == 2:
@@ -649,11 +531,11 @@ class PageFormatter:
         else:
             return word
 
-    def _ital_repl(self, word):             # //Italic// added for Wiki Creole compliance
+    def _ital_repl(self, word):  # //Italic// added for Wiki Creole compliance
         self.is_ital = not self.is_ital
         return ['</em>', '<em>'][self.is_ital]
 
-    def _brk_repl(self, word):              # \\ Line break added for Wiki Creole compliance
+    def _brk_repl(self, word):  # \\ Line break added for Wiki Creole compliance
         return '<br/>'
 
     def _heading_repl(self, word):          # == Heading and == Heading == added for Wiki Creole compliance
@@ -675,7 +557,7 @@ class PageFormatter:
         regex_wikiword = re.compile('[^\[\s*|^\]\s*]+')
         text_wikiword = regex_wikiword.findall(word)
         # Join wiki word into one big string
-        text_wikiwordii = string.join(text_wikiword)
+        text_wikiwordii = ''.join(text_wikiword)
         return Page(text_wikiwordii).link_to()
 
     def _namedurl_repl(self, word):
@@ -839,15 +721,15 @@ class PageFormatter:
     def _macro_repl(self, word):
         macro_name = word[2:-2]
         # TODO: Somehow get the default value into the search field
-        return apply(globals()['_macro_' + macro_name], ())
+        return globals()['_macro_' + macro_name](*())
 
 
     def replace(self, match):
-        for type, hit in match.groupdict().items():
+        for type, hit in list(match.groupdict().items()):
             if hit:
-                return apply(getattr(self, '_' + type + '_repl'), (hit,))
+                return getattr(self, '_' + type + '_repl')(*(hit,))
         else:
-            raise "Can't handle match " + `match`
+            raise "Can't handle match " + repr(match)
         
 
     def print_html(self):
@@ -900,7 +782,7 @@ class PageFormatter:
         no_oli_re = re.compile("^\s*#+")
         no_uli_re = re.compile("^\s*\*+")
 
-        raw = string.expandtabs(self.raw)
+        raw = str.expandtabs(self.raw)
         for line in eol_re.split(raw):
             if self.in_table:
                  # Table scan mode
@@ -908,7 +790,7 @@ class PageFormatter:
                  # assume table is complete.
                  if no_table_re.match(line):
                     self.in_table = 0  # Set table mode off
-                    print "\n</table>\n"  # Print table close tag
+                    print("\n</table>\n")  # Print table close tag
             if self.in_oli == 1:
                  # Ordered list scan mode
                  # If the next line doesn't have a # character in it,
@@ -919,7 +801,7 @@ class PageFormatter:
                      while self.oli_level != 0:
                          s = s + "\n</ol>\n"  # Print oli close tag
                          self.oli_level = self.oli_level - 1
-                     print s
+                     print(s)
             if self.in_uli == 1:
                  # Unordered list scan mode
                  # If the next line doesn't have a * character in it,
@@ -930,24 +812,24 @@ class PageFormatter:
                      while self.uli_level != 0:
                          s = s + "\n</ul>\n"  # Print uli close tag
                          self.uli_level = self.uli_level - 1
-                     print s
+                     print(s)
             # Normal scan mode
             if not self.in_pre:
             # XXX: Should we check these conditions in this order?
                         if blank_re.match(line):
-                            print '<p>'
+                            print('<p>')
                             continue
-                        print re.sub(scan_re, self.replace, line)   #Normal scan
+                        print(re.sub(scan_re, self.replace, line))   #Normal scan
             else:
-                        print re.sub(scan_pre, self.replace, line)  #Preformatted scan
+                        print(re.sub(scan_pre, self.replace, line))  #Preformatted scan
 
 # When we reach here, the last line in the page has already been processed.
 # Clean up any preformatting, tables, or lists left open.
-        if self.in_pre: print '</pre>' # If user forgets closing braces, put </pre> at end of page.
+        if self.in_pre: print('</pre>') # If user forgets closing braces, put </pre> at end of page.
         if self.in_table:
                  # Assume table is complete.
                     self.in_table = 0  # Set table mode off
-                    print "\n</table>\n"  # Print table close tag
+                    print("\n</table>\n")  # Print table close tag
         if self.in_oli == 1:
                  # Assume ordered list is complete.
                      self.in_oli = 0  # Set oli mode off
@@ -955,7 +837,7 @@ class PageFormatter:
                      while self.oli_level != 0:
                          s = s + "\n</ol>\n"  # Print oli close tag
                          self.oli_level = self.oli_level - 1
-                     print s
+                     print(s)
         if self.in_uli == 1:
                  # Assume unordered list is complete.
                      self.in_uli = 0  # Set uli mode off
@@ -963,7 +845,7 @@ class PageFormatter:
                      while self.uli_level != 0:
                          s = s + "\n</ul>\n"  # Print uli close tag
                          self.uli_level = self.uli_level - 1
-                     print s
+                     print(s)
 
 # Page ------------------------------------------------------------
 class Page:
@@ -983,14 +865,14 @@ class Page:
 
 
     def _tmp_filename(self):
-        return path.join(text_dir, ('#' + self.page_name + '.' + `os.getpid()` + '#'))
+        return path.join(text_dir, ('#' + self.page_name + '.' + repr(os.getpid()) + '#'))
 
 
     def exists(self):
         try:
             os.stat(self._text_filename())
             return 1
-        except OSError, er:
+        except OSError as er:
             if er.errno == errno.ENOENT:
                 return 0
             else:
@@ -1011,7 +893,7 @@ class Page:
     def get_raw_body(self):
         try:
             return open(self._text_filename(), 'rt').read()
-        except IOError, er:
+        except IOError as er:
             if er.errno == errno.ENOENT:
                 # just doesn't exist, use default
                 return 'Describe %s here.' % self.page_name
@@ -1040,17 +922,17 @@ class Page:
 
     def send_editor(self):
         send_title('Edit ' + self.split_title())
-        print '<form method="post" action="%s">' % (get_scriptname())
-        print '<input type=hidden name="savepage" value="%s">' % (self.page_name)
-        raw_body = string.replace(self.get_raw_body(), '\r\n', '\n')
-        print """<textarea wrap="virtual" name="savetext" rows=%s
-                 cols=%s>%s</textarea>""" % (text_area_rows , text_area_cols,  raw_body)
-        print """<br><input type=submit value="Save">
+        print('<form method="post" action="%s">' % (get_scriptname()))
+        print('<input type=hidden name="savepage" value="%s">' % (self.page_name))
+        raw_body = (self.get_raw_body()).replace('\r\n', '\n')
+        print("""<textarea wrap="virtual" name="savetext" rows=%s
+                 cols=%s>%s</textarea>""" % (text_area_rows , text_area_cols,  raw_body))
+        print("""<br><input type=submit value="Save">
                  <input type=reset value="Reset">
-                 """
-        print "<br>"
-        print "</form>"
-        print "<p>" + Page('EditingTips').link_to()
+                 """)
+        print("<br>")
+        print("</form>")
+        print("<p>" + Page('EditingTips').link_to())
                  
 
     def _write_file(self, text):
@@ -1061,8 +943,8 @@ class Page:
             # Bad Bill!  POSIX rename ought to replace. :-(
             try:
                 os.remove(text)
-            except OSError, er:
-                if er.errno <> errno.ENOENT: raise er
+            except OSError as er:
+                if er.errno != errno.ENOENT: raise er
         os.rename(tmp_filename, text)
 
 
@@ -1073,8 +955,8 @@ class Page:
         
 # Main Program ----------------------------------------------------
 
-print "Content-type: text/html"
-print
+print("Content-type: text/html")
+print()
 
 try:
     form = cgi.FieldStorage()
@@ -1084,9 +966,9 @@ try:
                  'edit':        do_edit,
                  'savepage':    do_savepage }
 
-    for cmd in handlers.keys():
-        if form.has_key(cmd):
-            apply(handlers[cmd], (form[cmd].value,))
+    for cmd in list(handlers.keys()):
+        if cmd in form:
+            handlers[cmd](*(form[cmd].value,))
             break
     else:
         path_info = environ.get('PATH_INFO', '')
@@ -1099,10 +981,9 @@ try:
         # On IIS, PATH_INFO of / is /piki.py. The latter won't work.
         # Change /piki.py to just / .
         scriptname  = os.path.basename( get_scriptname() )
-        if re.search( scriptname , path_info ):
-		    path_info = '/'
+        if re.search( scriptname , path_info ): path_info = '/'
 
-        if form.has_key('goto'):
+        if 'goto' in form:
             query = form['goto'].value
         elif len(path_info) and path_info[0] == '/':
             query = path_info[1:] or 'FrontPage'
@@ -1114,7 +995,7 @@ try:
             word = word_match.group(0)
             Page(word).send_page()
         else:
-            print "<p>Can't work out query \"<pre>" + query + "</pre>\""
+            print("<p>Can't work out query \"<pre>" + query + "</pre>\"")
 
 except:
     cgi.print_exception()
